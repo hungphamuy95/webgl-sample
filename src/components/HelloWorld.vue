@@ -1,58 +1,110 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
-  </div>
+  <div id="hello"></div>
 </template>
 
 <script>
+/*eslint-disable */
+import * as THREE from 'three';
+
 export default {
   name: 'HelloWorld',
+  data(){
+    return{
+      Colors: {
+      red:0xf25346,
+      white:0xd8d0d1,
+      pink:0xF5986E,
+      brown:0x59332e,
+      brownDark:0x23190f,
+      blue:0x68c3c0,
+    },
+    scene:{},
+    camera:{}, 
+    fieldOfView: {}, 
+    aspectRatio: {}, 
+    nearPlane:{}, 
+    farPlane:{},
+    renderer:{}, 
+    container:{},
+    HEIGHT: {},
+    WIDTH: {},
+    ambientLight:{}, 
+    hemisphereLight:{}, 
+    shadowLight: {}
+    }
+  },
   props: {
-    msg: String
+  },
+  mounted(){
+    this.init();
+  },
+  methods:{
+    createScene(){
+      this.HEIGHT = window.innerHeight;
+      this.WIDTH = window.innerWidth;
+      this.scene = new THREE.Scene();
+      this.aspectRatio = this.WIDTH/this.HEIGHT;
+      this.fieldOfView = 60;
+      this.nearPlane = 1;
+      this.farPlane = 10000;
+      this.camera = new THREE.PerspectiveCamera(
+        this.fieldOfView,
+        this.aspectRatio,
+        this.nearPlane,
+        this.farPlane
+      );
+      this.scene.fog = new THREE.Fog(0xf7d9aa, 100, 950);
+      this.camera.position.x = 0;
+      this.camera.position.y = 200;
+      this.camera.position.z = 100;
+
+      this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
+      this.renderer.setSize(this.WIDTH, this.HEIGHT);
+      this.renderer.shadowMap.enabled = true;
+      this.container = document.getElementById("hello");
+      this.container.appendChild(this.renderer.domElement)
+      window.addEventListener('resize',this.handleWindowResize(), false)
+    },
+    handleWindowResize(){
+      this.HEIGHT = window.innerHeight;
+      this.WIDTH = window.innerWidth;
+      this.renderer.setSize(this.WIDTH, this.HEIGHT);
+      this.camera.aspect = this.WIDTH/this.HEIGHT;
+      this.camera.updateProjectionMatrix();
+    },
+    createLights(){
+      this.hemisphereLight = new THREE.HemisphereLight(0xffffff, .9);
+      this.ambientLight = new THREE.AmbientLight(0xdc8874, .5);
+      this.shadowLight = new THREE.DirectionalLight(0xffffff, .9);
+      this.shadowLight.castShadow = true;
+      this.shadowLight.shadow.camera.left = -400;
+      this.shadowLight.shadow.camera.right = 400;
+      this.shadowLight.shadow.camera.top = 400;
+      this.shadowLight.shadow.camera.bottom = -400;
+      this.shadowLight.shadow.camera.near = 1;
+      this.shadowLight.shadow.camera.far = 1000;
+      this.shadowLight.shadow.mapSize.width = 2048;
+      this.shadowLight.shadow.mapSize.height = 2048;
+      this.scene.add(this.hemisphereLight);
+      this.scene.add(this.ambientLight);
+      this.scene.add(this.shadowLight);
+    },
+    createSampleObject(){
+      const geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
+      const material = new THREE.MeshBasicMaterial( {color: 0x57e5ff} );
+      const cube = new THREE.Mesh( geometry, material );
+      debugger;
+      this.scene.addObject( cube );
+    },
+    init(){
+      this.createScene();
+      this.createLights();
+      this.createSampleObject();
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 </style>

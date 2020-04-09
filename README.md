@@ -1,4 +1,4 @@
-# webgl-best-practice
+# webgl-sample
 
 ## Project setup
 ```

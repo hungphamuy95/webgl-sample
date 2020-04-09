@@ -60,8 +60,8 @@ export default {
       );
       this.scene.fog = new THREE.Fog(0xf7d9aa, 100, 950);
       this.camera.position.x = 0;
-      this.camera.position.y = 100;
-      this.camera.position.z = 150;
+      this.camera.position.y = 85;
+      this.camera.position.z = 200;
 
       this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
       this.renderer.setSize(this.WIDTH, this.HEIGHT);
@@ -78,9 +78,9 @@ export default {
       this.camera.updateProjectionMatrix();
     },
     createLights(){
-      this.hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, .9);
-      this.ambientLight = new THREE.AmbientLight(0xdc8874, .5);
-      this.shadowLight = new THREE.DirectionalLight(0xffffff, .9);
+      this.hemisphereLight = new THREE.HemisphereLight(0xffe6b3, .9);
+      this.ambientLight = new THREE.AmbientLight(0xffe6b3, .5);
+      this.shadowLight = new THREE.DirectionalLight(0xffe6b3, .9);
       this.shadowLight.castShadow = true;
       this.shadowLight.shadow.camera.left = -400;
       this.shadowLight.shadow.camera.right = 400;
@@ -91,7 +91,7 @@ export default {
       this.shadowLight.shadow.mapSize.width = 2048;
       this.shadowLight.shadow.mapSize.height = 2048;
       this.scene.add(this.hemisphereLight);
-      //this.scene.add(this.ambientLight);
+      this.scene.add(this.ambientLight);
       this.scene.add(this.shadowLight);
     },
     airPlane: function(){
@@ -99,7 +99,7 @@ export default {
       
       // create the cabin
       const geomeCockpit = new THREE.BoxGeometry(60,50,50,1,1,1);
-      const matCockpit = new THREE.MeshPhongMaterial({color:0xff0000, flatShading: THREE.FlatShading});
+      const matCockpit = new THREE.MeshPhongMaterial({color:0xff604e, flatShading: THREE.FlatShading});
       const cockpit = new THREE.Mesh(geomeCockpit, matCockpit);
       cockpit.castShadow = true;
       cockpit.receiveShadow = true;
@@ -117,7 +117,7 @@ export default {
 
       // create tail plane
       const geomTailplane = new THREE.BoxGeometry(15,20,5,1,1,1);
-      const matTailplane = new THREE.MeshPhongMaterial({color:0xff0000, flatShading: THREE.FlatShading});
+      const matTailplane = new THREE.MeshPhongMaterial({color:0xff604e, flatShading: THREE.FlatShading});
       const tailplane = new THREE.Mesh(geomTailplane, matTailplane);
       tailplane.position.set(-35, 25, 0);
       tailplane.castShadow =true;
@@ -126,7 +126,7 @@ export default {
 
       // create wing
       const geomSideWing = new THREE.BoxGeometry(40,8,150,1,1,1);
-      const matSideWing = new THREE.MeshPhongMaterial({color:0xff0000, flatShading:THREE.FlatShading});
+      const matSideWing = new THREE.MeshPhongMaterial({color:0xff604e, flatShading:THREE.FlatShading});
       const sideWing = new THREE.Mesh(geomSideWing, matSideWing);
       sideWing.position.set(0,0,0);
       sideWing.castShadow = true;
@@ -175,14 +175,12 @@ export default {
         this.mesh.add(m);
       }
     },
-    Sky: function(thisCloud){
+    Sky: function(globalContext){
       this.mesh = new THREE.Object3D();
       this.nClouds = 20;
-      this.clouds = [];
       const stepAngle = Math.PI*2 / this.nClouds;
       for(let i=0; i<this.nClouds; i++){
-        const c = thisCloud;
-        this.clouds.push(c);
+        const c = new globalContext.Cloud();
         const a = stepAngle*i;
         const h = 750 + Math.random()*200;
         c.mesh.position.y = Math.sin(a)*h;
@@ -198,7 +196,7 @@ export default {
       const geom = new THREE.CylinderGeometry(600,600,800,40,10);
       geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
       const mat = new THREE.MeshPhongMaterial({
-        color:0x0000ff ,
+        color:0x03d0d0 ,
         transparent:true,
         opacity:.6,
         shading:THREE.FlatShading,
@@ -218,8 +216,8 @@ export default {
       this.scene.add(this.sea.mesh);
     },
     createSky(){
-      this.sky = new this.Sky(new this.Cloud());
-      this.sky.mesh.position.y = -600;
+      this.sky = new this.Sky(this);
+      this.sky.mesh.position.y = -500;
       this.scene.add(this.sky.mesh);
     },
     loop(){
@@ -263,4 +261,8 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+.hello{
+  background-color: darksalmon;
+}
+</style>
